@@ -58,13 +58,21 @@ if uploaded_file is not None:
         shap.summary_plot(shap_values, processed_df, show=False)
         st.pyplot(fig)
 
-        # Optional: SHAP force plot for first transaction
+        # ✅ Local SHAP workaround: Force Plot for first sample
         try:
             st.subheader("🔎 Local Explanation (Force Plot for 1st Sample)")
-            st_shap_html = shap.plots.force(shap_values[0], matplotlib=False)
-            st.components.v1.html(st_shap_html, height=300)
-        except Exception:
-            st.warning("Could not render force plot inline (Streamlit limitation).")
+            shap.initjs()
+            force_plot = shap.plots.force(shap_values[0])
+            os.makedirs("visuals", exist_ok=True)
+            shap.save_html("visuals/force_plot_ui.html", force_plot)
+
+            with open("visuals/force_plot_ui.html", "r", encoding="utf-8") as f:
+                html_content = f.read()
+                st.components.v1.html(html_content, height=400, scrolling=True)
+
+        except Exception as e:
+            st.warning("Could not render force plot inline due to Streamlit limitations.")
+            st.text(str(e))
 
         # Download results
         st.download_button("📥 Download Results", result_df.to_csv(index=False), file_name="predictions.csv")

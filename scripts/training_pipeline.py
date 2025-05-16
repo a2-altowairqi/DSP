@@ -23,9 +23,9 @@ def set_seed(seed=42):
 
 # Load data
 def load_data(filepath):
-    print("📂 Loading dataset...")
+    print(" Loading dataset...")
     data = pd.read_csv(filepath)
-    print(f"✅ Loaded dataset with shape: {data.shape}")
+    print(f" Loaded dataset with shape: {data.shape}")
     return data
 
 # Preprocess
@@ -45,7 +45,7 @@ def preprocess_data(data, target_column='Class'):
             ('num', numeric_transformer, numeric_features)
         ])
 
-    print("✅ Preprocessing pipeline created.")
+    print(" Preprocessing pipeline created.")
     return X, y, preprocessor
 
 # Train stacked model
@@ -65,23 +65,23 @@ def train_model(X, y, preprocessor, save_path="models"):
         ('classifier', model)
     ])
 
-    print("🔀 Splitting data into train/test...")
+    print(" Splitting data into train/test...")
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    print(f"✅ Training set: {X_train.shape}, Test set: {X_test.shape}")
+    print(f" Training set: {X_train.shape}, Test set: {X_test.shape}")
 
     print("🚀 Starting model training (this may take several minutes)...")
     start = time.time()
     pipeline.fit(X_train, y_train)
-    print(f"✅ Model training completed in {time.time() - start:.2f} seconds.")
+    print(f" Model training completed in {time.time() - start:.2f} seconds.")
 
-    print("📊 Generating classification report...")
+    print(" Generating classification report...")
     y_pred = pipeline.predict(X_test)
     print(classification_report(y_test, y_pred))
 
-    print("💾 Saving model...")
+    print(" Saving model...")
     os.makedirs(save_path, exist_ok=True)
     joblib.dump(pipeline, os.path.join(save_path, "fraud_detection_model.pkl"))
-    print("✅ Model saved to 'models/fraud_detection_model.pkl'")
+    print(" Model saved to 'models/fraud_detection_model.pkl'")
 
     return pipeline
 

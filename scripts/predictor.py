@@ -12,7 +12,14 @@ def predict_transaction(df, model_path):
     return predictions, probabilities
 
 def explain_predictions(df, model_path):
-    pipeline = load_pipeline(model_path)
-    explainer = shap.Explainer(pipeline.named_steps["classifier"], pipeline.named_steps["preprocessor"].transform(df))
-    shap_values = explainer(pipeline.named_steps["preprocessor"].transform(df))
+
+    pipeline = joblib.load(model_path)
+    processed = pipeline.named_steps["preprocessor"].transform(df)
+
+    # Pick the first base model from the stacking ensemble (e.g. Random Forest)
+    base_model = pipeline.named_steps["classifier"].estimators_[0][1]  # Access 'rf'
+
+    explainer = shap.Explainer(base_model.predict, processed)
+    shap_values = explainer(processed)
+
     return shap_values, df
